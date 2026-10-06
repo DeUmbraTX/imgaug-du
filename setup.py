@@ -1,7 +1,8 @@
 # pylint: disable=missing-module-docstring
 import re
 
-from pkg_resources import get_distribution, DistributionNotFound
+from importlib.metadata import distribution, PackageNotFoundError
+from packaging.requirements import Requirement
 from setuptools import setup, find_packages
 
 long_description = """A library for image augmentation in machine learning experiments, particularly convolutional
@@ -32,10 +33,10 @@ def check_alternative_installation(install_require, alternative_install_requires
     """
     for alternative_install_require in alternative_install_requires:
         try:
-            alternative_pkg_name = re.split(r"[!<>=]", alternative_install_require)[0]
-            get_distribution(alternative_pkg_name)
+            alternative_pkg_name = Requirement(str(alternative_install_require)).name
+            distribution(alternative_pkg_name)
             return str(alternative_install_require)
-        except DistributionNotFound:
+        except PackageNotFoundError:
             continue
 
     return str(install_require)
